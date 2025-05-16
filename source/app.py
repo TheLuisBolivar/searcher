@@ -1,6 +1,20 @@
 import streamlit as st
 from dotenv import load_dotenv
-import os
+from langgraph.graph import StateGraph, START, END
+from models.deep_search import DeepSearch
+from services.deep_search_service import get_keywords, get_results, get_companies
+builder = StateGraph(DeepSearch)
+
+builder.add_node("get_keywords", get_keywords)
+builder.add_node("get_results", get_results)
+builder.add_node("get_companies", get_companies)
+
+builder.add_edge(START, "get_keywords")
+builder.add_edge("get_keywords", "get_results")
+builder.add_edge("get_results", "get_companies")
+builder.add_edge("get_companies", END)
+
+graph = builder.compile()
 
 # Load environment variables
 load_dotenv()
